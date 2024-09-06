@@ -9,5 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class NewsletterWithSpringApplication
 
 fun main(args: Array<String>) {
-    runApplication<NewsletterWithSpringApplication>(*args)
+    val context = runApplication<NewsletterWithSpringApplication>(*args)
+    val newsService = context.getBean(NewsService::class.java)
+    newsService.fetchAndSaveAllNews()
 }

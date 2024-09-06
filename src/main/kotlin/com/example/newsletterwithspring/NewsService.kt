@@ -4,38 +4,56 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.client.HttpClientErrorException
 
 @Service
-class NewsService {
+class NewsService(
+    private val articlesService: ArticlesService,
+    private val newsProcessor: NewsProcessor
+) {
 
     private val logger = LoggerFactory.getLogger(NewsService::class.java)
     private val apiUrl = "http://api.mediastack.com/v1/news?access_key=MY_KEY"
 
-    fun getNews(language: String, tags: List<String>): List<String> {
+    /**
+     * Receiving and saving all news
+     */
+    @Scheduled(fixedRate = 60000)
+    fun fetchAndSaveAllNews(): Boolean {
         val restTemplate = RestTemplate()
 
-        val languageParam = "languages=$language"
-        val categoriesParam = "categories=${tags.joinToString(",")}"
-
-        val url = "$apiUrl&$languageParam&$categoriesParam"
-        val titles = mutableListOf<String>()
-
-        try {
+        return try {
+            val url = "$apiUrl&timestamp=${System.currentTimeMillis()}"
             val response = restTemplate.getForObject(url, JsonNode::class.java)
-            response?.get("data")?.forEach { article ->
-                titles.add(article.get("title").asText())
+            response?.let {
+                val newsData = it.get("data")
+                val newsList = newsData.toList()
+                newsProcessor.processNewsData(newsList)
             }
-
-            logger.info("Found ${titles.size} news articles for language: $language and tags: ${tags.joinToString(",")}")
+            logger.info("Fetched and saved all available news.")
+            true
         } catch (e: HttpClientErrorException) {
             logger.error("Error fetching news from API: ${e.message}")
+            false
         } catch (e: Exception) {
             logger.error("Unexpected error: ${e.message}")
+            false
         }
+    }
 
-        return titles
+    /**
+     * Receive filtered news for the user based on categories and language
+     */
+    fun getFilteredNews(language: String, categories: List<String>): List<Articles> {
+        return try {
+            val articles = articlesService.getFilteredNews(language, categories)
+            logger.info("Found ${articles.size} news articles for language: $language and categories: ${categories.joinToString(",")}")
+            articles
+        } catch (e: Exception) {
+            logger.error("Error fetching filtered news from DB: ${e.message}")
+            emptyList()
+        }
     }
 }
-
 

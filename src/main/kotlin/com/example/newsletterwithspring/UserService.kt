@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 class UserService {
 
     private val users = listOf(
-        User("ii@mail.ru", "Иван Иванов", "en", listOf("technology", "science", "sports", "politics")),
+        User("my_mail@mail.ru", "Иван Иванов", "en", listOf("technology", "science", "sports", "politics")),
         User("user2@example.com", "John Doe", "en", listOf("sports", "politics"))
     )
 

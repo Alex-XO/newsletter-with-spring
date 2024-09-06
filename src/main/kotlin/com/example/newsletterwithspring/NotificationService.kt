@@ -17,9 +17,9 @@ class NotificationService(
     @Scheduled(fixedRate = 60000)
     fun checkForNewsAndSendEmails() {
         userService.getUsers().forEach { user ->
-            val news = newsService.getNews(user.language, user.tags)
+            val news = newsService.getFilteredNews(user.language, user.tags)
             if (news.size >= 5) {
-                val message = "New articles:\n" + news.joinToString("\n")
+                val message = "New articles:\n" + news.joinToString("\n") {it.title}
                 emailService.sendEmail(user.email, "Latest News", message)
                 logger.info("Sent email to ${user.email} with ${news.size} new articles")
             } else {

@@ -1,4 +1,4 @@
-package com.example.newsletterwithspring
+package com.example.newsletterwithspring.articles
 
 import jakarta.persistence.*
 import java.time.OffsetDateTime
@@ -18,5 +18,6 @@ data class Articles(
     val category: String,
     val language: String,
     val country: String,
-    val publishedAt: OffsetDateTime
+    val publishedAt: OffsetDateTime,
+    val savedAt: OffsetDateTime = OffsetDateTime.now()
 )

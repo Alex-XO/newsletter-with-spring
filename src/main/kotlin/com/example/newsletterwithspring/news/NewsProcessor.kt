@@ -1,5 +1,7 @@
-package com.example.newsletterwithspring
+package com.example.newsletterwithspring.news
 
+import com.example.newsletterwithspring.articles.Articles
+import com.example.newsletterwithspring.articles.ArticlesService
 import com.fasterxml.jackson.databind.JsonNode
 import java.time.LocalDate
 import java.time.OffsetDateTime

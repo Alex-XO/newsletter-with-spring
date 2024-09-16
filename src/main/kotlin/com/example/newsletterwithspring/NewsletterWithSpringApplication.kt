@@ -1,5 +1,6 @@
 package com.example.newsletterwithspring
 
+import com.example.newsletterwithspring.news.NewsService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.scheduling.annotation.EnableScheduling

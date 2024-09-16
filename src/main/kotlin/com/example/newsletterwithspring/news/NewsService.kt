@@ -1,20 +1,26 @@
-package com.example.newsletterwithspring
+package com.example.newsletterwithspring.news
 
+import com.example.newsletterwithspring.articles.Articles
+import com.example.newsletterwithspring.articles.ArticlesRepository
+import com.example.newsletterwithspring.articles.ArticlesService
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.client.HttpClientErrorException
+import java.time.OffsetDateTime
 
 @Service
 class NewsService(
     private val articlesService: ArticlesService,
-    private val newsProcessor: NewsProcessor
-) {
+    private val newsProcessor: NewsProcessor,
+    private val articlesRepository: ArticlesRepository
+)
+{
 
     private val logger = LoggerFactory.getLogger(NewsService::class.java)
-    private val apiUrl = "http://api.mediastack.com/v1/news?access_key=MY_KEY"
+    private val apiUrl = "http://api.mediastack.com/v1/news?access_key=426ce5efe4575478f589ed2f0b313bb5"
 
     /**
      * Receiving and saving all news
@@ -42,18 +48,8 @@ class NewsService(
         }
     }
 
-    /**
-     * Receive filtered news for the user based on categories and language
-     */
-    fun getFilteredNews(language: String, categories: List<String>): List<Articles> {
-        return try {
-            val articles = articlesService.getFilteredNews(language, categories)
-            logger.info("Found ${articles.size} news articles for language: $language and categories: ${categories.joinToString(",")}")
-            articles
-        } catch (e: Exception) {
-            logger.error("Error fetching filtered news from DB: ${e.message}")
-            emptyList()
-        }
+    fun getNewsAfter(lastSentAt: OffsetDateTime?, language: String, categories: List<String>): List<Articles> {
+        return articlesRepository.findNewsAfter(lastSentAt, language, categories)
     }
 }
 

@@ -1,29 +1,37 @@
 package com.example.newsletterwithspring
 
-import org.springframework.beans.factory.annotation.Autowired
+import com.example.newsletterwithspring.news.NewsService
+import com.example.newsletterwithspring.user.UserService
+import com.example.newsletterwithspring.user.UserRepository
+import jakarta.transaction.Transactional
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.slf4j.LoggerFactory
+import java.time.OffsetDateTime
 
 @Service
 class NotificationService(
-    @Autowired private val userService: UserService,
-    @Autowired private val newsService: NewsService,
-    @Autowired private val emailService: EmailService
+    private val userService: UserService,
+    private val newsService: NewsService,
+    private val emailService: EmailService,
+    private val userRepository: UserRepository
 ) {
 
-    private val logger = LoggerFactory.getLogger(NotificationService::class.java)
-
     @Scheduled(fixedRate = 60000)
+    @Transactional
     fun checkForNewsAndSendEmails() {
-        userService.getUsers().forEach { user ->
-            val news = newsService.getFilteredNews(user.language, user.tags)
-            if (news.size >= 5) {
-                val message = "New articles:\n" + news.joinToString("\n") {it.title}
+        val users = userService.getUsers()
+
+        users.forEach { user ->
+            val newNews = newsService.getNewsAfter(user.lastSentAt, user.language, user.tags.map { it.name })
+                .take(5)
+
+            if (newNews.size == 5) {
+                val message = "New articles:\n" + newNews.joinToString("\n") { it.title }
+
                 emailService.sendEmail(user.email, "Latest News", message)
-                logger.info("Sent email to ${user.email} with ${news.size} new articles")
-            } else {
-                logger.info("Not enough news for ${user.email}. Only found ${news.size} articles.")
+
+                user.lastSentAt = OffsetDateTime.now()
+                userRepository.save(user)
             }
         }
     }

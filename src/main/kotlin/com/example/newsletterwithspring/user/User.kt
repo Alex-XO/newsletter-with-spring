@@ -1,5 +1,6 @@
 package com.example.newsletterwithspring.user
 
+import com.example.newsletterwithspring.category.Categories
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 
@@ -8,25 +9,24 @@ import java.time.OffsetDateTime
 data class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val email: String,
-    val fullName: String,
-    val language: String,
+    var email: String,
+    var fullName: String,
+    var language: String,
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "user_tags", // Таблица связей между users и tags
+        name = "user_category",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "tag_id")]
     )
-    val tags: Set<Tag> = emptySet(),
+    var categories: Set<Categories> = emptySet(),
 
     var lastSentAt: OffsetDateTime? = null
 )
 
-@Entity
-@Table(name = "tags")
-data class Tag(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    val name: String
+class CreateUserRequest(
+    val email: String,
+    val fullName: String,
+    val language: String,
+    val category: Set<String>
 )

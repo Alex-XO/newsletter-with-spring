@@ -22,13 +22,22 @@ class NotificationService(
         val users = userService.getUsers()
 
         users.forEach { user ->
-            val newNews = newsService.getNewsAfter(user.lastSentAt, user.language, user.tags.map { it.name })
+            val newNews = newsService.getNewsAfter(user.lastSentAt, user.language, user.categories.map { it.name })
                 .take(5)
 
             if (newNews.size == 5) {
-                val message = "New articles:\n" + newNews.joinToString("\n") { it.title }
+                val message = StringBuilder("New articles:<br/><ul>")
+                newNews.forEach { article ->
+                    message.append("<li><a href='${article.url}'>${article.title}</a></li>")
+                }
+                message.append("</ul>")
 
-                emailService.sendEmail(user.email, "Latest News", message)
+                emailService.sendEmail(
+                    user.email,
+                    "Latest News",
+                    message.toString(),
+                    isHtml = true
+                )
 
                 user.lastSentAt = OffsetDateTime.now()
                 userRepository.save(user)

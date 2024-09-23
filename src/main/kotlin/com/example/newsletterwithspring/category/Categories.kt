@@ -9,5 +9,3 @@ data class Categories(
     val id: Long? = null,
     val name: String
 )
-
-

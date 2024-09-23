@@ -1,8 +1,8 @@
 package com.example.newsletterwithspring.articles
 
+import com.example.newsletterwithspring.category.Categories
 import jakarta.persistence.*
-import java.time.OffsetDateTime
-
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "articles")
@@ -18,6 +18,6 @@ data class Articles(
     val category: String,
     val language: String,
     val country: String,
-    val publishedAt: OffsetDateTime,
-    val savedAt: OffsetDateTime = OffsetDateTime.now()
+    val publishedAt: LocalDateTime,
+    val savedAt: LocalDateTime = LocalDateTime.now(),
 )

@@ -2,7 +2,7 @@ package com.example.newsletterwithspring.user
 
 import com.example.newsletterwithspring.category.Categories
 import jakarta.persistence.*
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
@@ -21,7 +21,7 @@ data class User(
     )
     var categories: Set<Categories> = emptySet(),
 
-    var lastSentAt: OffsetDateTime? = null
+    var lastSentAt: LocalDateTime? = null
 )
 
 class CreateUserRequest(

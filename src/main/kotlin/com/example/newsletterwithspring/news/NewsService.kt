@@ -9,7 +9,9 @@ import org.springframework.web.client.RestTemplate
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.client.HttpClientErrorException
-import java.time.OffsetDateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 class NewsService(
@@ -48,7 +50,14 @@ class NewsService(
         }
     }
 
-    fun getNewsAfter(lastSentAt: OffsetDateTime?, language: String, categories: List<String>): List<Articles> {
+    fun findArticlesByDateAndCategory(date: LocalDate?, category: String?): List<Articles> {
+        val startOfDay = date?.atStartOfDay()
+        val endOfDay = date?.atTime(LocalTime.MAX)
+
+        return articlesRepository.findByPublishedAtBetweenAndCategory(startOfDay, endOfDay, category)
+    }
+
+    fun getNewsAfter(lastSentAt: LocalDateTime?, language: String, categories: List<String>): List<Articles> {
         return articlesRepository.findNewsAfter(lastSentAt, language, categories)
     }
 }

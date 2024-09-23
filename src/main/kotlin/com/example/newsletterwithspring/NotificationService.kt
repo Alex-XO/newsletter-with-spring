@@ -6,7 +6,7 @@ import com.example.newsletterwithspring.user.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 
 @Service
 class NotificationService(
@@ -39,7 +39,7 @@ class NotificationService(
                     isHtml = true
                 )
 
-                user.lastSentAt = OffsetDateTime.now()
+                user.lastSentAt = LocalDateTime.now()
                 userRepository.save(user)
             }
         }

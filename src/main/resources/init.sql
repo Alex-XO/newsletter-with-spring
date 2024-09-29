@@ -15,19 +15,25 @@ create table articles
     saved_at     timestamp with time zone default now()
 );
 
-alter table articles
-    owner to postgres;
 
 create table category
 (
-    id   integer default nextval('tags_id_seq'::regclass) not null
-        constraint tags_pkey
-            primary key,
+    id           bigserial
+        primary key,
     name varchar(255)                                     not null
 );
 
-alter table category
-    owner to postgres;
+
+create table users
+(
+    id           bigserial
+        primary key,
+    email        varchar(255) not null
+        unique,
+    full_name    varchar(255),
+    language     varchar(10)  not null,
+    last_sent_at timestamp with time zone
+);
 
 create table user_category
 (
@@ -42,21 +48,3 @@ create table user_category
     constraint user_tags_pkey
         primary key (user_id, tag_id)
 );
-
-alter table user_category
-    owner to postgres;
-
-create table users
-(
-    id           bigserial
-        primary key,
-    email        varchar(255) not null
-        unique,
-    full_name    varchar(255),
-    language     varchar(10)  not null,
-    last_sent_at timestamp with time zone
-);
-
-alter table users
-    owner to postgres;
-

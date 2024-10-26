@@ -18,11 +18,7 @@ class EmailService(private val mailSender: JavaMailSender) {
 
             message.setTo(to)
             message.setSubject(subject)
-            if (isHtml) {
-                message.setText(text, true)
-            } else {
-                message.setText(text)
-            }
+            message.setText(text, isHtml)
 
             mailSender.send(message.mimeMessage)
             logger.info("Email sent to $to with subject $subject")
